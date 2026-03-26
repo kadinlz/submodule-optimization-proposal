@@ -1,3 +1,7 @@
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
 # Parallelizing Submodular Optimization
 
 **Authors:** Kadin Zhang, Pranav Sangwan
@@ -15,15 +19,15 @@ We are going to study parallelization strategies for greedy submodular optimizat
 ---
 
 ## Background
-Submodular optimization is a fundamental problem in combinatorial optimization which has many applications in machine learning, data summarization, and network analysis. The problem definition is as follows. A set function $f: 2^V \rightarrow \mathbb{R}$ is submodular if it satisfies the diminishing returns property: for all $A \subseteq B \subseteq V$ and $x \notin B$,
+Submodular optimization is a fundamental problem in combinatorial optimization which has many applications in machine learning, data summarization, and network analysis. The problem definition is as follows. A set function $$f: 2^V \rightarrow \mathbb{R}$$is submodular if it satisfies the diminishing returns property: for all$$A \subseteq B \subseteq V$$and$$x \notin B$$,
 
 $$f(A \cup \{x\}) - f(A) \ge f(B \cup \{x\}) - f(B)$$
 
-This condition essentially just formalizes the intuition that adding an element provides less benefit when the current set is larger by requiring diminishing returns. The goal of the problem is to maximize a submodular function $f$ value over all choices of input $S$ such that $|S| \leq k$. More formally:
+This condition essentially just formalizes the intuition that adding an element provides less benefit when the current set is larger by requiring diminishing returns. The goal of the problem is to maximize a submodular function $$f$$value over all choices of input$$S$$such that$$|S| \leq k$$. More formally:
 
 $$\max_{|S| \leq k} f(S)$$
 
-The standard way to do this is to use a greedy algorithm, which iteratively selects the next element to add to $S$ to be the one providing the largest marginal gain. This algorithm achieves a $(1 - 1/e)$ approximation to the optimal solution where $e$ is Euler’s constant. However, this algorithm is inherently sequential as each iteration depends on the current selected set $S$, and the marginal gains must be recomputed after every selection.
+The standard way to do this is to use a greedy algorithm, which iteratively selects the next element to add to $$S$$to be the one providing the largest marginal gain. This algorithm achieves a$$(1 - 1/e)$$approximation to the optimal solution where$$e$$is Euler’s constant. However, this algorithm is inherently sequential as each iteration depends on the current selected set$$S$$, and the marginal gains must be recomputed after every selection.
 
 Despite this sequential structure, the algorithm contains components that suggest opportunities for parallel execution. In particular, each iteration requires evaluating marginal gains for a large number of candidate elements, which can be done in parallel. More interestingly, parallelism can be further increased by relaxing the strict sequential dependence of the greedy algorithm. For example, instead of selecting a single element at each iteration, multiple elements can be selected in a batch using marginal gains computed from a shared (possibly stale) state. Similarly, relaxations such as using stale marginal gains for selections can be explores which reduces synchronization.
 
@@ -36,8 +40,8 @@ To justify why we are exploring this problem we note that submodular optimizatio
 ## The Challenge
 Parallelizing greedy submodular optimization presents several challenges including:
 
-* **Sequential Dependencies:** Each iteration updates the selected set $S$, and all future marginal gain computations depend on this updated state. This creates a strong dependency chain between iterations, making it difficult to parallelize across iterations without affecting correctness.
-* **Synchronization Overhead:** In a parallel setting, threads must coordinate updates to the shared set $S$, which can limit scalability. Reducing synchronization may lead to wasted and incorrect optimization directions.
+* **Sequential Dependencies:** Each iteration updates the selected set $$S$$, and all future marginal gain computations depend on this updated state. This creates a strong dependency chain between iterations, making it difficult to parallelize across iterations without affecting correctness.
+* **Synchronization Overhead:** In a parallel setting, threads must coordinate updates to the shared set $$S$$, which can limit scalability. Reducing synchronization may lead to wasted and incorrect optimization directions.
 * **Memory Behavior:** The algorithm repeatedly evaluates marginal gains over a large candidate set which can involve irregular memory access patterns, leading to poor cache locality and increased memory bandwidth usage.
 * **Parallelism and Solution Quality Tradeoffs:** Increasing parallelism requires relaxing strict sequential behavior. While this improves performance, it may lead to suboptimal choices.
 * **GPU Acceleration Challenges:** Mapping evaluations to a GPU requires careful consideration of data layout and memory transfers. Irregular access patterns may limit speedups.
