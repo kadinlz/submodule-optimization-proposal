@@ -61,7 +61,7 @@ The greedy algorithm — which iteratively selects the element with the largest 
 
 ### The Facility Location Objective
 
-We focus on the facility location objective, where the ground set $$V = \{1,\ldots,n\}$$ has each element $$i$$ corresponding to a vector $$x_i \in \mathbb{R}^{32}$$. Given a budget $$k$$, we select $$S \subseteq V$$ with $$|S| \le k$$ to maximize:
+We focus on the facility location objective, where the ground set $$V = \{1,\ldots,n\}$$ has each element $$i$$ corresponding to a vector $$x_i \in \mathbb{R}^{32}$$. Given a budget $$k$$, we select $$S \subseteq V$$ with $$\lvert S \rvert \le k$$ to maximize:
 
 $$f(S) = \sum_{i \in V} \max_{j \in S}\, w_{ij}, \qquad w_{ij} = \exp\!\left(-\frac{\|x_i - x_j\|^2}{2\sigma^2}\right),\quad \sigma = 20.$$
 
@@ -69,7 +69,7 @@ Maintaining per-point *coverage values* $$m_i = \max_{j \in S} w_{ij}$$ allows m
 
 $$\Delta(c \mid S) = \sum_{i} \max(0,\, w_{ic} - m_i),$$
 
-reducing per-round cost from $$O(n \cdot |S|)$$ to $$O(n)$$, with total cost $$O(kn)$$ once similarities are available.
+reducing per-round cost from $$O(n \cdot \lvert S \rvert)$$ to $$O(n)$$, with total cost $$O(kn)$$ once similarities are available.
 
 ### CELF: Lazy Greedy
 
@@ -89,7 +89,7 @@ Our implementation progresses through six solver generations, each motivated by 
 
 Two design decisions established here carry through every subsequent version:
 
-**Incremental coverage maintenance.** A length-$$n$$ array `best_sim` tracks $$m_i$$ and is updated in an $$O(n)$$ pass after each selection, avoiding $$O(n|S|)$$ recomputation.
+**Incremental coverage maintenance.** A length-$$n$$ array `best_sim` tracks $$m_i$$ and is updated in an $$O(n)$$ pass after each selection, avoiding $$O(n \lvert S \rvert)$$ recomputation.
 
 **SIMD-accelerated RBF kernel.** The pairwise similarity uses `#pragma omp simd` with `__restrict__` annotations. With $$d = 32$$ fixed, AVX2 executes the inner squared-distance loop in exactly 8 SIMD steps — instruction-level parallelism orthogonal to all thread-level work.
 
@@ -315,7 +315,7 @@ Both constraints — synchronization idle time and memory-bound active cycles �
 
 Every form of parallelism introduced corresponds to a controlled relaxation of exact greedy. Batch selection commits $$b = \lfloor k/20 \rfloor$$ facilities per round with slightly stale coverage; CELF operates on gains stale by up to one round; progressive pruning at $$\tau = 0.90$$ removes points whose remaining contribution is bounded by $$1 - \tau = 0.10$$. Yet quality is preserved to a remarkable degree across all configurations.
 
-The reason is structural: the diminishing returns property of submodular objectives bounds the loss from any single suboptimal selection, and this bound shrinks as $$|S|$$ grows. The pruning threshold $$\tau = 0.90$$ directly enforces a per-point error ceiling of 0.10. Empirically, across all 12 benchmark configurations and all thread counts, the parallel objective value stays within **0.1% of the sequential greedy baseline**.
+The reason is structural: the diminishing returns property of submodular objectives bounds the loss from any single suboptimal selection, and this bound shrinks as $$\lvert S \rvert$$ grows. The pruning threshold $$\tau = 0.90$$ directly enforces a per-point error ceiling of 0.10. Empirically, across all 12 benchmark configurations and all thread counts, the parallel objective value stays within **0.1% of the sequential greedy baseline**.
 
 ---
 
