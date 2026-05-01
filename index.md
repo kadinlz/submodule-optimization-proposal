@@ -1,3 +1,12 @@
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true
+    }
+  });
+</script>
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
@@ -318,33 +327,3 @@ The reason is structural: the diminishing returns property of submodular objecti
 - **Problem size is the dominant performance factor.** Larger instances provide more parallel work per barrier, better amortizing fixed synchronization overhead. Clustering, density, and skew have secondary and more nuanced effects.
 - **Nested parallelism overcomes single-dimension scaling walls.** The $$G \times M$$ decomposition simultaneously enlarges PQ sizes (reducing CELF stale fraction from ~19% to ~4.8%), narrows global barriers (128-way → 32-way), and reduces load imbalance — enabling monotonic scaling across all datasets to 128 threads.
 
----
-
-## References
-
-1. U. Feige. A threshold of ln n for approximating set cover. *Journal of the ACM*, 45(4):634–652, 1998.
-2. D. Kempe, J. Kleinberg, É. Tardos. Maximizing the spread of influence through a social network. *KDD*, 2003.
-3. A. Krause, D. Golovin. Submodular function maximization. *Tractability: Practical Approaches to Hard Problems*, 2014.
-4. J. Leskovec et al. Cost-effective outbreak detection in networks. *KDD*, 2007.
-5. G. L. Nemhauser, L. A. Wolsey, M. L. Fisher. An analysis of approximations for maximizing submodular set functions—i. *Mathematical Programming*, 14(1):265–294, 1978.
-
----
-
-## Work Distribution
-
-| Task | Kadin Zhang | Pranav Sangwan |
-|---|---|---|
-| Implementation setup | 80% | 20% |
-| Feature choices & synthetic data generation | 20% | 80% |
-| Sequential baseline and SIMD kernel | 70% | 30% |
-| Priority Queue CELF implementation | 80% | 20% |
-| Distributed CELF implementation | 80% | 20% |
-| Hierarchical k-means gain evaluation | 20% | 80% |
-| W matrix elimination and batch coupling fix | 30% | 70% |
-| hpc mode implementation and optimizations | 20% | 80% |
-| nhpc design and implementation | 20% | 80% |
-| NUMA-aware memory placement (explored) | 80% | 20% |
-| Near-lock-free central priority queue (explored) | 90% | 10% |
-| Data collection | 70% | 30% |
-| Report writing | 40% | 60% |
-| **Total** | **50%** | **50%** |
