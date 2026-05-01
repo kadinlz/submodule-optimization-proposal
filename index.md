@@ -28,8 +28,8 @@
 
 # Parallelizing Greedy Submodular Optimization
 
-<div class="authors">Kadin Zhang &nbsp;&nbsp;·&nbsp;&nbsp; Pranav Sangwan</div>
-<div class="venue">15-418/618 Parallel Computer Architecture and Programming &nbsp;·&nbsp; Carnegie Mellon University, Spring 2026</div>
+<div class="authors">Pranav Sangwan &nbsp;&nbsp;·&nbsp;&nbsp; Kadin Zhang</div>
+<div class="venue">15-418 Parallel Computer Architecture and Programming &nbsp;·&nbsp; Carnegie Mellon University.</div>
 
 ---
 
